@@ -1,0 +1,25 @@
+pipeline {
+    agent any
+
+    stages {
+    
+    stage('Build Application') {
+            steps {
+                sh 'gradle clean build'
+            }
+            post {
+                success {
+                    echo "Now Archiving the Artifacts...."
+                    archiveArtifacts artifacts: 'build/libs/*.war'
+                }
+            }
+        }
+        
+         stage('Create Tomcat Docker Image'){
+            steps {
+                sh "docker build . -t tomcatsamplewebapp:${env.BUILD_ID}"
+            }
+        }
+
+    }
+}
